@@ -21,6 +21,36 @@ interface FetchedCode {
   filesReviewed: string[];
 }
 
+// Interface for GitHub Commit data
+export interface GitHubCommit {
+  sha: string;
+  html_url: string;
+  commit: {
+    message: string;
+    author: {
+      name: string;
+      email: string;
+      date: string;
+    };
+    committer: {
+      name: string;
+      email: string;
+      date: string;
+    };
+  };
+  author: { // Author of the commit (GitHub user)
+    login: string;
+    avatar_url: string;
+    html_url: string;
+  } | null; // Can be null if author is not a GitHub user
+  committer: { // Committer of the commit (GitHub user)
+    login: string;
+    avatar_url: string;
+    html_url: string;
+  } | null; // Can be null if committer is not a GitHub user
+}
+
+
 function isValidGitHubUrl(url: string): boolean {
   try {
     const parsedUrl = new URL(url);
@@ -161,4 +191,24 @@ export async function fetchCodeFromRepo(repoUrl: string, language: string): Prom
   }
 
   return { code: concatenatedCode, filesReviewed };
+}
+
+export async function fetchCommits(owner: string, repo: string, branch: string): Promise<GitHubCommit[]> {
+  // TODO: Add pagination for repos with many commits if necessary. For now, fetching default (30 commits).
+  // Add `?sha=branch_name` to specify the branch.
+  const url = `${GITHUB_API_BASE_URL}/repos/${owner}/${repo}/commits?sha=${branch}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error(`Commits not found for ${owner}/${repo} on branch ${branch}. The repository or branch may not exist or there are no commits.`);
+    }
+    if (response.status === 403) {
+      throw new Error(`GitHub API rate limit exceeded or access forbidden for ${owner}/${repo}. Please try again later.`);
+    }
+    throw new Error(`Failed to fetch commits for ${owner}/${repo} (status ${response.status}).`);
+  }
+
+  const commits: GitHubCommit[] = await response.json();
+  return commits;
 }
