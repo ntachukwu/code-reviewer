@@ -7,8 +7,8 @@ interface ReviewFormProps {
   languages: LanguageOption[];
   selectedLanguage: LanguageOption;
   onLanguageChange: (language: LanguageOption) => void;
-  repoUrl: string; // Changed from 'code' to 'repoUrl'
-  onRepoUrlChange: (url: string) => void; // Changed from 'onCodeChange'
+  repoUrl: string;
+  onRepoUrlChange: (url: string) => void;
   onSubmit: () => void;
   isLoading: boolean;
 }

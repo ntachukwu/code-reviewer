@@ -58,6 +58,7 @@ async function fetchRepoTree(owner: string, repo: string, branch: string): Promi
     throw new Error(`Failed to fetch repository file tree (status ${response.status}).`);
   }
   const data = await response.json();
+  console.log(data)
   return data.tree.filter((file: GitHubFile) => file.type === 'blob'); // Only interested in files
 }
 

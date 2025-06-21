@@ -8,7 +8,7 @@ export async function reviewCode(code: string, language: string, filesReviewed: 
   }
 
   const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
-  const model = import.meta.env.VITE_GEMINI_2;
+  const model = import.meta.env.VITE_GEMINI;
   
   let filesContext = "";
   if (filesReviewed.length > 0) {
