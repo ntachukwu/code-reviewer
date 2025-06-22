@@ -60,7 +60,7 @@ function isValidGitHubUrl(url: string): boolean {
   }
 }
 
-function parseGitHubUrl(repoUrl: string): { owner: string; repo: string; defaultBranch?: string } | null {
+export function parseGitHubUrl(repoUrl: string): { owner: string; repo: string; defaultBranch?: string } | null {
   if (!isValidGitHubUrl(repoUrl)) return null;
   try {
     const url = new URL(repoUrl);
