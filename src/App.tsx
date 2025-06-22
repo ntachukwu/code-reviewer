@@ -2,20 +2,20 @@ import React, { useState, useCallback } from 'react';
 import { Header } from './components/Header';
 import { ReviewForm } from './components/ReviewForm';
 import { FeedbackPanel } from './components/FeedbackPanel';
-import { CommitTreeDisplay } from './components/CommitTreeDisplay'; // Import CommitTreeDisplay
+import { CommitTreeDisplay } from './components/CommitTreeDisplay';
 import { reviewCode } from './services/geminiService';
-import { fetchCodeFromRepo, fetchCommits, parseGitHubUrl } from './services/githubService'; // Import fetchCommits and parseGitHubUrl
-import { groupCommitsByScope } from './services/commitProcessorService'; // Import groupCommitsByScope
+import { fetchCodeFromRepo, fetchCommits, parseGitHubUrl } from './services/githubService';
+import { groupCommitsByScope } from './services/commitProcessorService';
 import { SUPPORTED_LANGUAGES, APP_TITLE } from './constants';
-import type { LanguageOption, GroupedCommits } from './types'; // Import GroupedCommits
-import './App.css';
+import type { LanguageOption, GroupedCommits } from './types';
+import './App.css'; // Keep for any App-specific overrides not covered by index.css
 
 const App: React.FC = () => {
   const [repoUrl, setRepoUrl] = useState<string>('');
   const [selectedLanguage, setSelectedLanguage] = useState<LanguageOption>(SUPPORTED_LANGUAGES[0]);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [filesReviewed, setFilesReviewed] = useState<string[]>([]);
-  const [groupedCommits, setGroupedCommits] = useState<GroupedCommits | null>(null); // State for grouped commits
+  const [groupedCommits, setGroupedCommits] = useState<GroupedCommits | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,12 +30,12 @@ const App: React.FC = () => {
 
     let parsedUrlInfo;
     try {
-      const url = new URL(repoUrl); // Standard URL parsing for basic validation
+      const url = new URL(repoUrl);
       if (url.protocol !== "https:" && url.protocol !== "http:") {
         setError("Invalid URL protocol. Please use https:// or http://.");
         return;
       }
-      parsedUrlInfo = parseGitHubUrl(repoUrl); // Use our specific parser
+      parsedUrlInfo = parseGitHubUrl(repoUrl);
       if (!parsedUrlInfo) {
         setError("Invalid GitHub repository URL format. Expected format: https://github.com/owner/repo.");
         return;
@@ -49,26 +49,22 @@ const App: React.FC = () => {
     setError(null);
     setFeedback(null);
     setFilesReviewed([]);
-    setGroupedCommits(null); // Reset commits on new submission
+    setGroupedCommits(null);
 
     try {
       const { owner, repo, defaultBranch = 'main' } = parsedUrlInfo;
-
-      // Fetch code for review and commits in parallel
       const [reviewData, rawCommits] = await Promise.allSettled([
         fetchCodeFromRepo(repoUrl, selectedLanguage.value),
-        fetchCommits(owner, repo, defaultBranch) // Use defaultBranch from parsed URL
+        fetchCommits(owner, repo, defaultBranch)
       ]);
 
       let fetchError = false;
 
-      // Handle code fetching results
       if (reviewData.status === 'fulfilled') {
         const { code: fetchedCode, filesReviewed: reviewedFilePaths } = reviewData.value;
         setFilesReviewed(reviewedFilePaths);
         if (!fetchedCode.trim()) {
           setError(prevError => prevError ? `${prevError}\nNo reviewable code found for ${selectedLanguage.label}.` : `No reviewable code found for ${selectedLanguage.label} in the repository.`);
-          // Don't return yet, try to process commits
         } else {
           const reviewResult = await reviewCode(fetchedCode, selectedLanguage.value, reviewedFilePaths);
           setFeedback(reviewResult);
@@ -79,13 +75,12 @@ const App: React.FC = () => {
         fetchError = true;
       }
 
-      // Handle commit fetching results
       if (rawCommits.status === 'fulfilled') {
         if (rawCommits.value.length > 0) {
           const processedCommits = groupCommitsByScope(rawCommits.value);
           setGroupedCommits(processedCommits);
         } else {
-           setGroupedCommits([]); // Explicitly set to empty array if no commits found
+           setGroupedCommits([]);
            console.warn("No commits found for the repository/branch.");
         }
       } else {
@@ -94,13 +89,11 @@ const App: React.FC = () => {
         fetchError = true;
       }
       
-      // If both failed, ensure error is prominent
       if (fetchError && reviewData.status === 'rejected' && rawCommits.status === 'rejected') {
          setError("Failed to fetch both code for review and commit history. Please check the repository URL and your connection.");
       }
 
     } catch (err: any) {
-      // This catch block handles errors from parseGitHubUrl or other synchronous errors
       setError(err.message || "An unexpected error occurred during repository processing.");
       console.error("Error during GitHub repo processing:", err);
     } finally {
@@ -108,10 +101,15 @@ const App: React.FC = () => {
     }
   }, [repoUrl, selectedLanguage]);
 
+  // Main application layout adjustments for Material Design
+  // The global background is set in index.css (#121212).
+  // We ensure text color is appropriate for dark theme (slate-100 or similar).
+  // Spacing between major components (ReviewForm, FeedbackPanel, CommitTreeDisplay) is increased (space-y-8 or space-y-10).
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100">
+    <div className="min-h-screen flex flex-col text-slate-100 bg-gray-900"> {/* Changed bg-gradient to bg-gray-900 (similar to #121212) */}
       <Header title={APP_TITLE} />
-      <main className="flex-grow container mx-auto p-4 md:p-8 space-y-6">
+      {/* Increased vertical spacing (space-y-8) and horizontal padding (px-4 md:px-8) for main content area */}
+      <main className="flex-grow container mx-auto p-4 md:p-8 space-y-8">
         <ReviewForm
           languages={SUPPORTED_LANGUAGES}
           selectedLanguage={selectedLanguage}
@@ -123,23 +121,28 @@ const App: React.FC = () => {
         />
         <FeedbackPanel
           feedback={feedback}
-          isLoading={isLoading} // isLoading is true for both review and commits
+          isLoading={isLoading}
           error={error}
           filesReviewed={filesReviewed}
         />
-        {/* Conditionally render CommitTreeDisplay */}
-        {/* Show only if not loading and there's either commit data or no specific "commit fetch" error component yet */}
+
         {!isLoading && groupedCommits && (
           <CommitTreeDisplay groupedCommits={groupedCommits} repoUrl={repoUrl} />
         )}
-        {/* Explicit message if commits were attempted but none found and no other error is present */}
+
         {!isLoading && !error && groupedCommits && groupedCommits.length === 0 && (
-           <div className="mt-6 p-4 bg-slate-800/50 rounded-lg shadow">
-            <p className="text-slate-400 text-center">No commits were found for the primary branch of this repository.</p>
+           // Styled this "no commits" message like a Material Design "empty state" or info card
+           <div className="mt-8 p-6 bg-slate-800 rounded-lg shadow-lg text-center">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-slate-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p className="text-slate-300 text-lg">No commits found.</p>
+            <p className="text-slate-400 text-sm mt-1">The primary branch of this repository may not have any commits yet.</p>
           </div>
         )}
       </main>
-      <footer className="text-center p-4 text-sm text-slate-400 border-t border-slate-700">
+      {/* Footer styling: subtle, common in Material Design footers */}
+      <footer className="text-center p-6 text-sm text-slate-500 border-t border-slate-700/50">
         Developed for the Admissions Team
       </footer>
     </div>

@@ -1,11 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #121212; /* Darker background for Material feel */
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -14,55 +16,130 @@
 }
 
 a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+  font-weight: 500; /* Roboto medium */
+  color: #bb86fc; /* Material Design purple (for dark theme links) */
+  text-decoration: none; /* Remove underline by default, add on hover if desired */
+  transition: color 0.2s ease-in-out;
 }
 a:hover {
-  color: #535bf2;
+  color: #3700b3; /* Darker purple on hover */
+  text-decoration: underline;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
+  /* display: flex; // Removing this to allow App.tsx to control main layout
+  place-items: center; // Removing this */
   min-width: 320px;
   min-height: 100vh;
+  background-color: #121212; /* Ensure body background matches root */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400; /* Roboto regular for headers, adjust as needed */
 }
 
 h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+  font-size: 2.125rem; /* Material Design H4 size, adjust as per hierarchy */
+  line-height: 1.2;
+  font-weight: 400;
 }
 
+
 button {
-  border-radius: 8px;
+  border-radius: 4px; /* Standard Material Design border radius */
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
+  font-size: 0.875rem; /* Material Design button text size */
+  font-weight: 500; /* Medium weight for button text */
+  font-family: 'Roboto', inherit;
+  background-color: #6200ee; /* Material primary color */
+  color: #ffffff; /* Text color for primary button */
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.25s, box-shadow 0.25s;
+  text-transform: uppercase;
+  letter-spacing: 0.089em;
+  box-shadow: 0px 1px 3px rgba(0,0,0,0.2), 0px 2px 2px rgba(0,0,0,0.14), 0px 1px 1px rgba(0,0,0,0.12); /* Material elevation */
 }
 button:hover {
-  border-color: #646cff;
+  background-color: #3700b3; /* Darker shade for hover */
+  box-shadow: 0px 2px 4px -1px rgba(0,0,0,0.2), 0px 4px 5px 0px rgba(0,0,0,0.14), 0px 1px 10px 0px rgba(0,0,0,0.12);
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: 2px solid #bb86fc; /* Focus outline with a Material color */
+  outline-offset: 2px;
 }
 
+/* Basic styling for input fields to align with Material Design */
+input[type="text"],
+input[type="url"],
+select {
+  font-family: 'Roboto', sans-serif;
+  padding: 10px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.23); /* Lighter border for dark theme */
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.87);
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  font-size: 1rem;
+}
+
+input[type="text"]:focus,
+input[type="url"]:focus,
+select:focus {
+  border-color: #bb86fc; /* Material accent color for focus */
+  background-color: rgba(255, 255, 255, 0.12);
+  outline: none; /* Remove default outline, rely on border */
+}
+
+/* Placeholder text color */
+input[type="text"]::placeholder,
+input[type="url"]::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+
+/* Light theme specific adjustments - for future use or if system theme is mixed */
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    color: #000000; /* Black text on light background */
+    background-color: #ffffff; /* White background */
+  }
+  a {
+    color: #6200ee; /* Material primary color for links */
   }
   a:hover {
-    color: #747bff;
+    color: #3700b3;
   }
   button {
-    background-color: #f9f9f9;
+    background-color: #6200ee;
+    color: #ffffff;
+  }
+  button:hover {
+    background-color: #3700b3;
+  }
+  body {
+    background-color: #ffffff;
+  }
+
+  input[type="text"],
+  input[type="url"],
+  select {
+    border: 1px solid rgba(0, 0, 0, 0.23);
+    background-color: rgba(0, 0, 0, 0.06);
+    color: #000000;
+  }
+
+  input[type="text"]:focus,
+  input[type="url"]:focus,
+  select:focus {
+    border-color: #6200ee;
+    background-color: rgba(0, 0, 0, 0.09);
+  }
+
+  input[type="text"]::placeholder,
+  input[type="url"]::placeholder {
+    color: rgba(0, 0, 0, 0.5);
   }
 }

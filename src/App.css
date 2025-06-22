@@ -1,42 +1,29 @@
+/* App.css - For specific overrides or styles not covered by Tailwind utility classes or global index.css */
+
+/*
+  Most of the initial global styles (like #root centering, logo, card, read-the-docs)
+  were part of the default Vite+React setup and are no longer directly used or have been
+  superseded by the Material Design restyling using Tailwind CSS and updates to index.css.
+
+  This file can be kept for any future App-specific CSS that doesn't fit well into
+  component styles or global utility-first classes.
+
+  For example, if we needed very specific layout adjustments for the #root element
+  that Tailwind's container class wasn't covering, we might add them here.
+  However, for now, the combination of index.css for base Material styles and
+  Tailwind utilities in components should cover most needs.
+*/
+
+/* Example: If we wanted to ensure #root takes full height if App.tsx's flex container wasn't enough */
+/*
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
+*/
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
-}
-
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
-}
+/* Any remaining specific styles that were in App.css and are still needed should be evaluated.
+   If they were for components that are now heavily styled with Tailwind, those CSS rules
+   might conflict or be redundant. It's often cleaner to manage styling via Tailwind if possible.
+*/
